@@ -23,6 +23,8 @@ nc::Shape shape;
 
 nc::Transform transform{ { 400, 300 }, 4, 0 };
 
+float t{ 0 };
+
 float frametime;
 float roundTime{ 0 };
 bool gameOver{ false };
@@ -40,6 +42,8 @@ bool Update(float dt) // delta time (60fps -> 1 / 60 = .016)
 	DWORD time = GetTickCount();
 	deltaTime = time - prevTime; //current frame time - previous frame time
 	prevTime = time;
+
+	t = t + dt * 5.0f;
 
 	frametime = dt;
 	roundTime += dt;
@@ -69,12 +73,17 @@ bool Update(float dt) // delta time (60fps -> 1 / 60 = .016)
 
 	if (Core::Input::IsPressed(Core::Input::KEY_LEFT))
 	{
-		transform.angle = transform.angle - (dt * 3.0f);
+		transform.angle = transform.angle - (nc::DegreesToRadians(360.0f) * dt);
 	}
 	if (Core::Input::IsPressed(Core::Input::KEY_RIGHT))
 	{
-		transform.angle = transform.angle + (dt * 3.0f);
+		transform.angle = transform.angle + (nc::DegreesToRadians(360.0f) * dt);
 	}
+
+	transform.position = nc::Clamp(transform.position, { 0,0 }, { 800,600 });
+
+	//transform.position.x = nc::Clamp(transform.position.x, 0.0f, 800.0f);
+	//transform.position.y = nc::Clamp(transform.position.y, 0.0f, 600.0f);
 
 
 	//if (Core::Input::IsPressed(Core::Input::KEY_LEFT))
@@ -103,6 +112,14 @@ void Draw(Core::Graphics& graphics)
 	graphics.DrawString(10,10,std::to_string(frametime).c_str());
 	graphics.DrawString(10,20, std::to_string(1.0f / frametime).c_str());
 	graphics.DrawString(10, 30, std::to_string(deltaTime / 1000.0f).c_str());
+
+	float v = (std::sin(t) + 1.0f) * 0.5f; // 0 - 2
+
+	nc::Color c = nc::Lerp(nc::Color{ 0, 0, 1 }, nc::Color{ 1, 0, 0 }, v);
+	graphics.SetColor(c);
+
+	nc::Vector2 p = nc::Lerp(nc::Vector2{ 400,300 }, nc::Vector2{ 400,100 }, v);
+	graphics.DrawString(p.x, p.y, "Last Starfighter");
 
 	if (gameOver) graphics.DrawString(400, 300, "Game Over");
 	

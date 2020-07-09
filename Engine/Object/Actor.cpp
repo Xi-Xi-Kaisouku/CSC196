@@ -38,7 +38,7 @@ namespace nc
 	std::istream& operator >> (std::istream& stream, Actor& actor)
 	{
 		stream >> actor.m_transform;
-		stream >> actor.m_shape;
+		//stream >> actor.m_shape;
 		
 		return stream;
 	}
