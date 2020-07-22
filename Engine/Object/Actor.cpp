@@ -13,11 +13,7 @@ namespace nc
 		{
 			success = true;
 
-			stream >> m_transform;
-
-			std::string shapename;
-			stream >> shapename;
-			m_shape.Load(shapename);
+			Load(stream);
 
 			stream.close();
 		}
@@ -32,16 +28,25 @@ namespace nc
 
 	void nc::Actor::Draw(Core::Graphics& graphics)
 	{
+		m_shape.Draw(graphics, m_transform);
+	}
+
+	float Actor::GetRadius()
+	{
+		return m_shape.GetRadius() * m_transform.scale;
+	}
+
+	void Actor::Load(std::istream& stream)
+	{
+		stream >> m_transform;
+
+		std::string shapename;
+		std::getline(stream, shapename);
+
+		m_shape.Load(shapename);
 
 	}
 	
-	std::istream& operator >> (std::istream& stream, Actor& actor)
-	{
-		stream >> actor.m_transform;
-		//stream >> actor.m_shape;
-		
-		return stream;
-	}
 }
 
 

@@ -4,19 +4,36 @@
 
 namespace nc
 {
+	class Scene;
+
 	class Actor
 	{
+	public:
+		enum class eType
+		{
+			PLAYER,
+			ENEMY,
+			PROJECTILE
+		};
+
 	public:
 		Actor() {}
 		Actor(const Transform& transform, const Shape& shape) : m_transform{ transform }, m_shape{ shape } {}
 		~Actor() {}
 
-		bool Load(const std::string& filename);
+		virtual eType GetType() = 0;
 
-		void Update(float dt);
-		void Draw(Core::Graphics& graphics);
+		virtual bool Load(const std::string& filename);
+		virtual void Load(std::istream& stream);
 
-		friend std::istream& operator >> (std::istream& stream, Actor& actor);
+		virtual void Update(float dt);
+		virtual void Draw(Core::Graphics& graphics);
+
+		virtual void OnCollision(Actor* actor) {}
+
+		float GetRadius();
+
+		void SetScene(class Scene* scene) { m_scene = scene; }
 
 		Transform& GetTransform()
 		{
@@ -28,8 +45,13 @@ namespace nc
 			return m_shape;
 		}
 
-	private:
-		Transform m_transform;
+		void SetDestroy(bool destroy = true) { m_destroy = destroy; }
+		bool IsDestroy() { return m_destroy; }
+
+	protected:
+		bool m_destroy{ false };
+		Scene* m_scene{ nullptr };
 		Shape m_shape;
+		Transform m_transform;
 	};
 }
